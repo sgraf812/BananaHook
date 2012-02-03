@@ -1,0 +1,26 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BananaHook", "BananaHook\BananaHook.csproj", "{07984C98-14EF-4125-AFD3-35ABFC573AD3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BananaHook.Specs", "BananaHook.Specs\BananaHook.Specs.csproj", "{1A25CBE1-5048-494C-B67F-AAC829AC1AF7}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{07984C98-14EF-4125-AFD3-35ABFC573AD3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{07984C98-14EF-4125-AFD3-35ABFC573AD3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{07984C98-14EF-4125-AFD3-35ABFC573AD3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{07984C98-14EF-4125-AFD3-35ABFC573AD3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1A25CBE1-5048-494C-B67F-AAC829AC1AF7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1A25CBE1-5048-494C-B67F-AAC829AC1AF7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1A25CBE1-5048-494C-B67F-AAC829AC1AF7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1A25CBE1-5048-494C-B67F-AAC829AC1AF7}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

@@ -4,7 +4,8 @@
 
 ## Quick Example ##
 
-`[UnmanagedFunctionPointer(CallingConvention.StdCall)]
+```
+[UnmanagedFunctionPointer(CallingConvention.StdCall)]
 public delegate int EndSceneDelegate(IntPtr devicePointer);
 
 ...
@@ -12,7 +13,8 @@ public delegate int EndSceneDelegate(IntPtr devicePointer);
 EndSceneDelegate d = Marshal.GetDelegateForFunctionPointer(new IntPtr(0x1234), typeof(EndSceneDelegate));
 var notifier = new ReflectionDetourNotifier((t, h) => new NativeHook(new InProcessMemory(), t, h), d);
 notifier.DetourCalled += (s, e) => { foreach (var p in e.Parameters) Console.WriteLine(p.ToString()); };
-notifier.Hook.Apply();`
+notifier.Hook.Apply();
+```
 
 Looks noisy, but definitely is extensible (added Int3Hook without much problems for example) and very clean.
 

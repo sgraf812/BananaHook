@@ -1,22 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Reflection;
 using System.Runtime.InteropServices;
-using System.Linq.Expressions;
 
 namespace BananaHook
 {
     public class ReflectionDetourNotifier : IDetourNotifier
     {
-        private readonly Delegate _targetDelegate;
+        private readonly Detour _detour;
         private readonly Delegate _hookDelegate;
-        private readonly IDetour _detour;
+        private readonly Delegate _targetDelegate;
 
-        public IHook Hook { get; private set; }
-        public event EventHandler<DetourCallbackEventArgs> DetourCalled;
+        public delegate IHook HookFactory(IntPtr targetAddress, IntPtr hookAddress);
 
-        public ReflectionDetourNotifier(Func<IntPtr, IntPtr, IHook> hookFactory, Delegate targetDelegate)
+        public ReflectionDetourNotifier(HookFactory hookFactory, Delegate targetDelegate)
         {
             _targetDelegate = targetDelegate;
             _hookDelegate = GenerateInterceptor(targetDelegate);
@@ -26,12 +25,19 @@ namespace BananaHook
             _detour = Hook.CreateDetour(_targetDelegate.GetType());
         }
 
+        #region IDetourNotifier Members
+
+        public IHook Hook { get; private set; }
+        public event EventHandler<DetourCallbackEventArgs> DetourCalled;
+
+        #endregion
+
         private Delegate GenerateInterceptor(Delegate targetDelegate)
         {
-            var delegateType = targetDelegate.GetType();
-            var mi = delegateType.GetMethod("Invoke");
-            var parameters = (from p in mi.GetParameters()
-                              select Expression.Parameter(p.ParameterType, p.Name)).ToArray();
+            Type delegateType = targetDelegate.GetType();
+            MethodInfo mi = delegateType.GetMethod("Invoke");
+            ParameterExpression[] parameters = (from p in mi.GetParameters()
+                                                select Expression.Parameter(p.ParameterType, p.Name)).ToArray();
 
             var builder = new InterceptorFuncBuilder(this);
             return builder.CreateLambdaBody(parameters, delegateType, mi);
@@ -39,12 +45,14 @@ namespace BananaHook
 
         protected virtual void OnDetourCalled(DetourCallbackEventArgs e)
         {
-            var detourCalled = DetourCalled;
+            EventHandler<DetourCallbackEventArgs> detourCalled = DetourCalled;
             if (detourCalled != null)
             {
                 detourCalled(this, e);
             }
         }
+
+        #region Nested type: InterceptorFuncBuilder
 
         private class InterceptorFuncBuilder
         {
@@ -67,10 +75,10 @@ namespace BananaHook
             public Delegate CreateLambdaBody(ParameterExpression[] parameters, Type delegateType, MethodInfo mi)
             {
                 _body.Clear();
-                var parameterListVariable = AddParametersToList(parameters);
-                var eventArgsVariable = FireEvent(parameterListVariable);
+                ParameterExpression parameterListVariable = AddParametersToList(parameters);
+                ParameterExpression eventArgsVariable = FireEvent(parameterListVariable);
                 CallOriginal(mi, parameters, eventArgsVariable);
-                var lambda = CompileLambda(parameters, parameterListVariable, eventArgsVariable);
+                Delegate lambda = CompileLambda(parameters, parameterListVariable, eventArgsVariable);
                 return CastToOriginalDelegateType(lambda, delegateType);
             }
 
@@ -79,7 +87,7 @@ namespace BananaHook
             /// </summary>
             private ParameterExpression AddParametersToList(IEnumerable<ParameterExpression> parameterTypes)
             {
-                var parameterVariable = Expression.Variable(typeof(List<object>), "parameters");
+                ParameterExpression parameterVariable = Expression.Variable(typeof(List<object>), "parameters");
                 _body.Add(parameterVariable);
                 _body.Add(Expression.Assign(parameterVariable, Expression.New(typeof(List<object>))));
                 _body.AddRange(from p in parameterTypes
@@ -93,13 +101,13 @@ namespace BananaHook
             /// </summary>
             private ParameterExpression FireEvent(Expression parameterListVariable)
             {
-                var eventArgsVariable = Expression.Variable(typeof(DetourCallbackEventArgs), "e");
+                ParameterExpression eventArgsVariable = Expression.Variable(typeof(DetourCallbackEventArgs), "e");
                 _body.Add(eventArgsVariable);
-                var eventArgsConstructor =
+                ConstructorInfo eventArgsConstructor =
                     typeof(DetourCallbackEventArgs).GetConstructor(new[] { typeof(IList<object>) });
                 _body.Add(Expression.Assign(eventArgsVariable,
                     Expression.New(eventArgsConstructor, parameterListVariable)));
-                var fireEvent = Expression.Call(Expression.Constant(_notifier),
+                MethodCallExpression fireEvent = Expression.Call(Expression.Constant(_notifier),
                     new Action<DetourCallbackEventArgs>(_notifier.OnDetourCalled).Method,
                     eventArgsVariable);
                 _body.Add(fireEvent);
@@ -125,9 +133,10 @@ namespace BananaHook
                     }
                     return ret;
                 };
-                var parametersAsArray = Expression.NewArrayInit(typeof(object),
+                NewArrayExpression parametersAsArray = Expression.NewArrayInit(typeof(object),
                     from p in parameters select Expression.Convert(p, typeof(object)));
-                var callOriginal = Expression.Call(Expression.Constant(actualCall.Target), actualCall.Method,
+                MethodCallExpression callOriginal = Expression.Call(Expression.Constant(actualCall.Target),
+                    actualCall.Method,
                     parametersAsArray, eventArgs);
 
                 if (HasNoReturnValue(mi))
@@ -151,8 +160,8 @@ namespace BananaHook
             /// </summary>
             private Delegate CompileLambda(ParameterExpression[] parameters, params ParameterExpression[] variables)
             {
-                var res = Expression.Block(variables, _body);
-                var ret = Expression.Lambda(res, parameters).Compile();
+                BlockExpression res = Expression.Block(variables, _body);
+                Delegate ret = Expression.Lambda(res, parameters).Compile();
                 return ret;
             }
 
@@ -164,6 +173,8 @@ namespace BananaHook
                 return Delegate.CreateDelegate(delegateType, ret, "Invoke");
             }
         }
+
+        #endregion
 
         #region Implementation of IDisposable
 

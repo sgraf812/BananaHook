@@ -21,6 +21,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -40,20 +41,27 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Asm\OpCode.cs" />
+    <Compile Include="Asm\X86Assembler.cs" />
     <Compile Include="Detour.cs" />
-    <Compile Include="IDetour.cs" />
     <Compile Include="IDetourNotifier.cs" />
     <Compile Include="IHook.cs" />
     <Compile Include="Infrastructure\Helper.cs" />
     <Compile Include="Infrastructure\IMemory.cs" />
     <Compile Include="Infrastructure\MemoryPageProtector.cs" />
+    <Compile Include="Infrastructure\PInvoke\Context.cs" />
+    <Compile Include="Infrastructure\PInvoke\ExceptionPointers.cs" />
+    <Compile Include="Infrastructure\PInvoke\ExceptionRecord.cs" />
     <Compile Include="Infrastructure\PInvoke\IMemoryProtection.cs" />
     <Compile Include="Infrastructure\PInvoke\MemoryProtectionConstraints.cs" />
-    <Compile Include="Infrastructure\PInvoke\MEMORY_BASIC_INFORMATION.cs" />
+    <Compile Include="Infrastructure\PInvoke\MemoryBasicInformation.cs" />
     <Compile Include="Infrastructure\PInvoke\Win32Implementation.cs" />
-    <Compile Include="NativeHook.cs" />
+    <Compile Include="Infrastructure\Patch.cs" />
+    <Compile Include="Int3Hook.cs" />
+    <Compile Include="PatchingHook.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ReflectionDetourNotifier.cs" />
+    <Compile Include="RetnHook.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

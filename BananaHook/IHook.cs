@@ -7,6 +7,6 @@ namespace BananaHook
         bool IsApplied { get; }
         void Apply();
         void Remove();
-        IDetour CreateDetour(Type delegateType);
+        Detour CreateDetour(Type delegateType);
     }
 }

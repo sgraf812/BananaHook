@@ -2,7 +2,7 @@
 
 namespace BananaHook
 {
-    public class Detour : IDetour
+    public class Detour
     {
         private readonly IHook _hook;
         private readonly Delegate _targetDelegate;

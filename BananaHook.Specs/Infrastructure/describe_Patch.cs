@@ -24,7 +24,8 @@ namespace BananaHook.Specs.Infrastructure
 
         void after_each()
         {
-            Marshal.Release(buffer);
+            patch.Dispose();
+            Marshal.FreeHGlobal(buffer);
         }
 
         void when_applying()

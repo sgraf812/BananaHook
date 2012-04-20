@@ -7,7 +7,6 @@ namespace BananaHook.Infrastructure
     {
         private readonly MemoryPageProtector _protector;
         private readonly IMemory _memory;
-        private readonly IntPtr _targetAddress;
         private readonly byte[] _replaceWith;
         private byte[] _original;
 
@@ -15,9 +14,11 @@ namespace BananaHook.Infrastructure
         {
             _protector = new MemoryPageProtector(new Win32Implementation(), targetAddress, (IntPtr)replaceWith.Length);
             _memory = memory;
-            _targetAddress = targetAddress;
+            TargetAddress = targetAddress;
             _replaceWith = replaceWith;
         }
+
+        public IntPtr TargetAddress { get; private set; }
 
         public bool IsApplied { get; private set; }
 
@@ -27,8 +28,8 @@ namespace BananaHook.Infrastructure
 
             _protector.ExecuteWithProtection(MemoryProtectionConstraints.PAGE_EXECUTE_READWRITE, () =>
             {
-                _original = _memory.ReadBytes(_targetAddress, _replaceWith.Length);
-                _memory.WriteBytes(_targetAddress, _replaceWith);
+                _original = _memory.ReadBytes(TargetAddress, _replaceWith.Length);
+                _memory.WriteBytes(TargetAddress, _replaceWith);
             });
             IsApplied = true;
         }
@@ -38,7 +39,7 @@ namespace BananaHook.Infrastructure
             if (!IsApplied) return;
 
             _protector.ExecuteWithProtection(MemoryProtectionConstraints.PAGE_EXECUTE_READWRITE, () => 
-                _memory.WriteBytes(_targetAddress, _original));
+                _memory.WriteBytes(TargetAddress, _original));
 
             IsApplied = false;
         }

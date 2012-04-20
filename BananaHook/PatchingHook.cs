@@ -6,19 +6,12 @@ namespace BananaHook
 {
     public class PatchingHook : IHook
     {
-        private readonly Patch _patch;
-        private readonly IntPtr _targetAddress;
-
         public PatchingHook(IMemory memory, IntPtr targetAddress, byte[] redirection)
         {
-            _targetAddress = targetAddress;
-            _patch = new Patch(memory, targetAddress, redirection);
+            Patch = new Patch(memory, targetAddress, redirection);
         }
 
-        protected IntPtr TargetAddress
-        {
-            get { return _targetAddress; }
-        }
+        protected Patch Patch { get; private set; }
 
         #region Implementation of IDisposable
 
@@ -36,7 +29,7 @@ namespace BananaHook
         {
             if (disposing)
             {
-                _patch.Dispose();
+                Patch.Dispose();
                 GC.SuppressFinalize(this);
             }
         }
@@ -45,21 +38,21 @@ namespace BananaHook
 
         #region Implementation of IHook
 
-        public bool IsApplied { get { return _patch.IsApplied; } }
+        public bool IsApplied { get { return Patch.IsApplied; } }
 
         public void Apply()
         {
-            _patch.Apply();
+            Patch.Apply();
         }
 
         public void Remove()
         {
-            _patch.Remove();
+            Patch.Remove();
         }
 
         public Detour CreateDetour(Type delegateType)
         {
-            var targetDelegate = Marshal.GetDelegateForFunctionPointer(TargetAddress, delegateType);
+            var targetDelegate = Marshal.GetDelegateForFunctionPointer(Patch.TargetAddress, delegateType);
             return new Detour(this, targetDelegate);
         }
 

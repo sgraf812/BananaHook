@@ -35,9 +35,6 @@
     <Reference Include="NSpec">
       <HintPath>..\packages\nspec.0.9.59\lib\NSpec.dll</HintPath>
     </Reference>
-    <Reference Include="NSubstitute">
-      <HintPath>..\packages\NSubstitute.1.3.0.0\lib\NET40\NSubstitute.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />

@@ -27,7 +27,7 @@ namespace BananaHook
             {
                 var exception = exceptionInfo->ExceptionRecord;
                 var context = exceptionInfo->ContextRecord;
-                if (exception->ExceptionAddress == TargetAddress)
+                if (exception->ExceptionAddress == Patch.TargetAddress)
                 {
                     if (exception->ExceptionCode == EXCEPTION_BREAKPOINT)
                     {

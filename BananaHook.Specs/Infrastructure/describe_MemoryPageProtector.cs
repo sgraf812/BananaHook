@@ -2,7 +2,6 @@
 using BananaHook.Infrastructure;
 using BananaHook.Infrastructure.PInvoke;
 using NSpec;
-using NSubstitute;
 
 namespace BananaHook.Specs.Infrastructure
 {

@@ -10,12 +10,13 @@ namespace BananaHook.Specs
         IHook _hook;
         object _result;
         SubjectToHook _subject;
+        SubjectToHook.ManagedDelegate _notToBeGCed;
 
         void before_each()
         {
             _subject = new SubjectToHook();
-            var hookAddress = Marshal.GetFunctionPointerForDelegate((SubjectToHook.ManagedDelegate)Hook);
-            _hook = CreateHook(new InProcessMemory(), _subject.ManagedPointer, hookAddress);
+            _notToBeGCed = Hook;
+            _hook = CreateHook(new InProcessMemory(), _subject.ManagedPointer, Marshal.GetFunctionPointerForDelegate(_notToBeGCed));
         }
 
         protected abstract IHook CreateHook(IMemory memory, IntPtr targetAddress, IntPtr hookAddress);
@@ -26,7 +27,11 @@ namespace BananaHook.Specs
 
             context["and the hook was applied"] = () =>
             {
-                before = () => _hook.Apply();
+                before = () =>
+                {
+                    _hook.Apply();
+                    GC.Collect();
+                };
 
                 it["should call the hook function"] = () => _result.should_be(1);
                 it["should be applied"] = () => _hook.IsApplied.should_be_true();

@@ -2,6 +2,10 @@
 
 **BananaHook** provides an easy, signature agnostic detour handling mechanism. It originated in my hobby WoW bot.
 
+## Supported Architectures ##
+
+Currently it is only possible to hook in x86 processes, yet a simple X64Assembler combined with some restructuring should suffice to support x64. 
+
 ## Quick Example ##
 
 ```

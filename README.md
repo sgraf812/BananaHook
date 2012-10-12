@@ -63,8 +63,8 @@ class WhatEver
     public WhatEver(Func<Delegate, IDetourNotifier> notifierFactory)
     {
         _notifier = notifierFactory(_endScene);
-        notifier.DetourCalled += (s, e) => { foreach (var p in e.Parameters) Console.WriteLine(p.ToString()); }; // or sth
-        notifier.Hook.Apply();
+        _notifier.DetourCalled += (s, e) => { foreach (var p in e.Parameters) Console.WriteLine(p.ToString()); }; // or sth
+        _notifier.Hook.Apply();
     }
 }
 

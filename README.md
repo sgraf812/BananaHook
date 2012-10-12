@@ -14,7 +14,7 @@ public delegate int EndSceneDelegate(IntPtr devicePointer);
 
 ...
 
-EndSceneDelegate d = Marshal.GetDelegateForFunctionPointer(new IntPtr(0x1234), typeof(EndSceneDelegate));
+EndSceneDelegate d = (EndSceneDelegate)Marshal.GetDelegateForFunctionPointer(new IntPtr(0x1234), typeof(EndSceneDelegate));
 var notifier = new ReflectionDetourNotifier((t, h) => new RetnHook(new InProcessMemory(), t, h), d);
 notifier.DetourCalled += (s, e) => { foreach (var p in e.Parameters) Console.WriteLine(p.ToString()); };
 notifier.Hook.Apply();

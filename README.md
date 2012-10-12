@@ -40,6 +40,7 @@ Providing a factory with parameters to a constructor that actually instantiates 
 Too be fair, it's supposed to be used with an IoC container such as Autofac:
 ```
 // Inside the IoC containers initialization module:
+builder.RegisterType<InProcessMemory>();
 builder.RegisterType<RetnHook>().As<IHook>();
 builder.Register(DetourNotifierFactory);
 builder.RegisterType<WhatEver>(); // see below

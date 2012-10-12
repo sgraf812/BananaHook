@@ -35,3 +35,42 @@ A *detour notifier* is just a little extension to the detour concept, which defi
 Through the use of this event model, one can intercept multiple functions, which may even differ in signature, with one generic event handler.
 E.g.: Decide to detour EndScene or Present based on the used DirectX version (9 or 11 respectively) and intercept with the same signature agnostic handler. Pretty slick ;)
 
+## Somewhat more elaborate example
+Providing a factory with parameters to a constructor that actually instantiates its dependency with that factory is clumsy and headspinning.
+Too be fair, it's supposed to be used with an IoC container such as Autofac:
+```
+// Inside the IoC containers initialization module:
+builder.RegisterType<RetnHook>().As<IHook>();
+builder.Register(DetourNotifierFactory);
+builder.RegisterType<WhatEver>(); // see below
+
+...
+
+private static IDetourNotifier DetourNotifierFactory(IComponentContext container, IEnumerable<Parameter> parameters)
+{
+    return new ReflectionDetourNotifier(container.Resolve<ReflectionDetourNotifier.HookFactory>(),
+       parameters.TypedAs<Delegate>());
+}
+
+...
+
+// Inside your actual code:
+class WhatEver
+{
+    private readonly EndSceneDelegate _endScene = ...; // probably inject through a ctor parameter too
+    private readonly IDetourNotifier _notifier;
+
+    public WhatEver(Func<Delegate, IDetourNotifier> notifierFactory)
+    {
+        _notifier = notifierFactory(_endScene);
+        notifier.DetourCalled += (s, e) => { foreach (var p in e.Parameters) Console.WriteLine(p.ToString()); }; // or sth
+        notifier.Hook.Apply();
+    }
+}
+
+...
+
+var we = container.Resolve<WhatEver>(); 
+```
+Note how decoupled and testable `WhatEver` is now. No noise regarding signatures etc. 
+You can even switch to another delegate signature without changing any code (if your event handler doesn't rely on certain parameters of course).

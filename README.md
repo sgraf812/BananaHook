@@ -8,7 +8,7 @@ Currently it is only possible to hook in x86 processes, yet a simple X64Assemble
 
 ## Quick Example ##
 
-```
+```cs
 [UnmanagedFunctionPointer(CallingConvention.StdCall)]
 public delegate int EndSceneDelegate(IntPtr devicePointer);
 
@@ -38,7 +38,7 @@ E.g.: Decide to detour EndScene or Present based on the used DirectX version (9 
 ## Somewhat more elaborate example
 Providing a factory with parameters to a constructor that actually instantiates its dependency with that factory is clumsy and headspinning.
 Too be fair, it's supposed to be used with an IoC container such as Autofac:
-```
+```cs
 // Inside the IoC containers initialization module:
 builder.RegisterType<InProcessMemory>();
 builder.RegisterType<RetnHook>().As<IHook>();

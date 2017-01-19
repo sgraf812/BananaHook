@@ -30,7 +30,7 @@ A short legend for those concepts (or at least how I use them):
 A *detour* is a special hook that returns control flow to the original function after doing its work (a redirection).
 A *detour notifier* is just a little extension to the detour concept, which defines 'doing its work' as firing up an event. 
 
-## Why should I bother downloading that shit? ##
+## Why should I bother downloading this? ##
 
 Through the use of this event model, one can intercept multiple functions, which may even differ in signature, with one generic event handler.
 E.g.: Decide to detour EndScene or Present based on the used DirectX version (9 or 11 respectively) and intercept with the same signature agnostic handler. Pretty slick ;)
